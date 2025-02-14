@@ -81,7 +81,7 @@ do
             getfenv(1).script_key = key;
             writefile("HohoKeyV4.txt", key)
             wait(.25)
-            api.load_script()
+            loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/e4aedc7ccd2bacd83555baa884f3d4b1.lua"))()
         end
         checking_key = false
     end
