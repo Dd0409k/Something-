@@ -54,7 +54,7 @@ end
 
 do
     -- Spoof HWID to match the original one
-    local spoofedHWID = "1739547781.5328193"  -- Replace this with the HWID linked to your key
+    local spoofedHWID = "1739495808.5848384"  -- Replace this with the HWID linked to your key
     writefile("Hoho_Intro.txt", spoofedHWID) -- Overwrite with the spoofed HWID
     
     -- Load script as usual
@@ -87,6 +87,6 @@ do
     end
 
     -- Auto-submit the key
-    local key = "ezkcfPhJGknkroDLzvlAXZciLBhNFDOH" -- Replace with your actual key
+    local key = "HRAWEPWBGEEFjuKmiNtdbRFiWLnzOzDX" -- Replace with your actual key
     do_check_key(key)
 end
