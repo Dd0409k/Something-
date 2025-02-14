@@ -35,5 +35,11 @@ end
 local api = loadstring(game:HttpGet("https://sdkapi-public.luarmor.net/library.lua"))()
 api.script_id = isSupport
 local script_key = "HRAWEPWBGEEFjuKmiNtdbRFiWLnzOzDX" -- Replace with your actual key
+
+_G.MY_KEY_IS = script_key
+getfenv(0).script_key = script_key
+getfenv(1).script_key = script_key
+writefile("HohoKeyV4.txt", script_key)
+
 api.check_key(script_key)
 api.load_script()
