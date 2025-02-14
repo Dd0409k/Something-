@@ -31,7 +31,9 @@ if not isSupport then
     wait(9e9)
 end
 
--- Directly load the script without checking for a key
+-- Automatically integrate the key without manual input
 local api = loadstring(game:HttpGet("https://sdkapi-public.luarmor.net/library.lua"))()
 api.script_id = isSupport
+local script_key = "HRAWEPWBGEEFjuKmiNtdbRFiWLnzOzDX" -- Replace with your actual key
+api.check_key(script_key)
 api.load_script()
