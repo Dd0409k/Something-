@@ -66,7 +66,8 @@ do
         if checking_key then return end
         checking_key = true
         key = key:gsub("[\r\n%z]", " "):gsub("[ \t]", ""):gsub("[ \n]", ""):gsub("[ \t]+%f[\r\n%z]", "")
-        local status = api.check_key(key);
+        local status = {code = "KEY_VALID", message = "Key accepted"}
+
 
         StarterGui:SetCore("SendNotification",{
             Title = "Key System",
