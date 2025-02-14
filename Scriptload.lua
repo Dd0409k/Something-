@@ -10,36 +10,82 @@ local ContentProvider = game:GetService("ContentProvider")
 
 repeat task.wait() until game:IsLoaded() and Players.LocalPlayer
 
-local plr = Players.LocalPlayer
+plr = Players.LocalPlayer
+
 local isSupport = nil
 local GameList = {
-    [994732206] = "e4aedc7ccd2bacd83555baa884f3d4b1", -- Blox Fruit
+	[994732206] = "e4aedc7ccd2bacd83555baa884f3d4b1", -- Blox Fruit
 }
 
 for id, scriptid in pairs(GameList) do
-    if id == GameId then
-        isSupport = scriptid
-    end
+	if id == GameId then
+		isSupport = scriptid
+	end
 end
 
 if _G.loadCustomId then
-    isSupport = _G.loadCustomId
+	isSupport = _G.loadCustomId
 end
 
 if not isSupport then
-    loadstring(game:HttpGet('https://raw.githubusercontent.com/acsu123/HohoV2/refs/heads/main/ScriptLoadButOlder.lua'))()
-    wait(9e9)
+	loadstring(game:HttpGet('https://raw.githubusercontent.com/acsu123/HohoV2/refs/heads/main/ScriptLoadButOlder.lua'))()
+	wait(9e9)
 end
 
--- Automatically integrate the key without manual input
-local api = loadstring(game:HttpGet("https://sdkapi-public.luarmor.net/library.lua"))()
-api.script_id = isSupport
-local script_key = "HRAWEPWBGEEFjuKmiNtdbRFiWLnzOzDX" -- Replace with your actual key
+INFO_DOT25_QUAD = TweenInfo.new(.25,Enum.EasingStyle.Quad)
 
-_G.MY_KEY_IS = script_key
-getfenv(0).script_key = script_key
-getfenv(1).script_key = script_key
-writefile("HohoKeyV4.txt", script_key)
+function CoreGuiAdd(gui)
+    repeat wait() until pcall(function()
+        gui.Parent = CoreGui
+    end)
+end
 
-api.check_key(script_key)
-api.load_script()
+PreloadID = {
+	"rbxassetid://4560909609",
+	"rbxassetid://12187376174",
+}
+UI_LOCK = true
+
+function isNotLocked(v)
+	if not v:GetAttribute("Locked") and UI_LOCK == false then
+		return true
+	end
+end
+
+do
+    -- Spoof HWID to match the original one
+    local spoofedHWID = "1739547781.5328193"  -- Replace this with the HWID linked to your key
+    writefile("Hoho_Intro.txt", spoofedHWID) -- Overwrite with the spoofed HWID
+    
+    -- Load script as usual
+    local api = loadstring(game:HttpGet("https://sdkapi-public.luarmor.net/library.lua"))()
+    api.script_id = isSupport
+    
+    local checking_key = false
+    local do_check_key = function(key)
+        if checking_key then return end
+        checking_key = true
+        key = key:gsub("[\r\n%z]", " "):gsub("[ \t]", ""):gsub("[ \n]", ""):gsub("[ \t]+%f[\r\n%z]", "")
+        local status = api.check_key(key);
+
+        StarterGui:SetCore("SendNotification",{
+            Title = "Key System",
+            Text = "[".. status.code .. "] " .. status.message,
+            Icon = "rbxassetid://16276677105"
+        })
+
+        if (status.code == "KEY_VALID") then			
+            script_key = key;
+            getfenv(0).script_key = key;
+            getfenv(1).script_key = key;
+            writefile("HohoKeyV4.txt", key)
+            wait(.25)
+            api.load_script()
+        end
+        checking_key = false
+    end
+
+    -- Auto-submit the key
+    local key = "ezkcfPhJGknkroDLzvlAXZciLBhNFDOH" -- Replace with your actual key
+    do_check_key(key)
+end
