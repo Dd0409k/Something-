@@ -58,7 +58,7 @@ do
     writefile("Hoho_Intro.txt", spoofedHWID) -- Overwrite with the spoofed HWID
     
     -- Load script as usual
-    local api = loadstring(game:HttpGet("https://sdkapi-public.luarmor.net/library.lua"))()
+    local api = loadstring(game:HttpGet("https://raw.githubusercontent.com/Dd0409k/Something-/refs/heads/main/Library.lua"))()
     api.script_id = isSupport
     
     local checking_key = false
