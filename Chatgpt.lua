@@ -1,24 +1,32 @@
--- Spoof HWID to match the original one
-local spoofedHWID = "1739608430.6159837"  -- Replace this with the HWID linked to your key
-writefile("Hoho_Intro.txt", spoofedHWID) -- Overwrite with the spoofed HWID
-
--- Define your key (bypass check)
-script_key = "FhsQAnNvjsjQIBpwjFLWrNdQSwNDfrAA"
-
--- Override HWID function if it exists
-if gethwid then
-    gethwid = function() return spoofedHWID end
+-- Override loadstring to capture decrypted script
+local originalLoadstring = loadstring
+loadstring = function(code)
+    writefile("decrypted_script.lua", code)  -- Save decrypted script
+    print("Decrypted script saved to decrypted_script.lua")
+    return originalLoadstring(code)  -- Execute normally
 end
 
--- Actual link to the loader
+-- Override pcall to detect hidden errors (optional)
+local originalPcall = pcall
+pcall = function(func, ...)
+    local status, result = originalPcall(func, ...)
+    if not status then print("Error detected:", result) end
+    return status, result
+end
+
+-- Now, run your original script below this
+
+--define ur key 
+script_key = "ViOVCWMAHzgYpBXkvYBLmjDcstobsFqf";
+
+-- actual link to the loader
+-- Luarmor Loader (Deobfuscated)
+
 local licenseMessage = "This file is licensed with Luarmor. You must use the actual loadstring to execute this script. Do not run this file directly. Always use the loadstring."
 
 local scriptID = "e4aedc7ccd2bacd83555baa884f3d4b1"
 local scriptURL = "https://api.luarmor.net/files/v3/l/" .. scriptID .. ".lua"
 local cacheFileName = scriptID .. "-cache.lua"
-
--- Log request before fetching
-print("Fetching script from: " .. scriptURL)
 
 -- Check if script is being loaded correctly
 if lrm_load_script then
@@ -42,9 +50,11 @@ l_fastload_enabled = function(mode)
             -- Save the downloaded script in a local file
             writefile(cacheFileName, "-- " .. licenseMessage .. "\n\nif not is_from_loader then warn('Use the loadstring, do not run this directly') return end;\n" .. response)
             wait(0.1)
+
             writefile("final_extracted_script.lua", response)
             warn("Final script extracted! Check final_extracted_script.lua")
             return
+
         end)
 
         -- If loading fails, log the error
@@ -53,7 +63,7 @@ l_fastload_enabled = function(mode)
             warn("Error while executing loader. Err: " .. tostring(err) .. " See lrm-err-loader-log-httpresp.txt in your workspace.")
             return
         end
-        
+
         success(is_from_loader)
     end
 
