@@ -3,9 +3,9 @@
 -- yRmNvA = Frame
 -- gTsKpW = TextBox
 -- qZjVrX = TextButton
+-- dKfLmN = SizeButton
 -- vWqXzL = success
 -- mNpYrK = result
--- dKfLmN = SizeButton
 
 local xdLqPt = Instance.new("ScreenGui")
 local yRmNvA = Instance.new("Frame")
@@ -25,15 +25,15 @@ yRmNvA.BorderSizePixel = 2
 yRmNvA.Draggable = true
 yRmNvA.Active = true
 
-yRmNvA.SizeOptions = {
-    Small = UDim2.new(0, 200, 0, 100),
-    Medium = UDim2.new(0, 300, 0, 150),
-    Large = UDim2.new(0, 400, 0, 200)
+local sizeOptions = {
+    Small = {Size = UDim2.new(0, 200, 0, 100), TextSize = 14},
+    Medium = {Size = UDim2.new(0, 300, 0, 150), TextSize = 18},
+    Large = {Size = UDim2.new(0, 400, 0, 200), TextSize = 22}
 }
 
 -- TextBox settings
 gTsKpW.Parent = yRmNvA
-gTsKpW.Size = UDim2.new(0.9, 0, 0.4, 0)
+gTsKpW.Size = UDim2.new(0.9, 0, 0.3, 0)
 gTsKpW.Position = UDim2.new(0.05, 0, 0.1, 0)
 gTsKpW.PlaceholderText = "Enter script URL"
 gTsKpW.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
@@ -43,7 +43,7 @@ gTsKpW.TextScaled = true
 -- SubmitButton settings
 qZjVrX.Parent = yRmNvA
 qZjVrX.Size = UDim2.new(0.9, 0, 0.3, 0)
-qZjVrX.Position = UDim2.new(0.05, 0, 0.6, 0)
+qZjVrX.Position = UDim2.new(0.05, 0, 0.5, 0)
 qZjVrX.Text = "Load Script"
 qZjVrX.BackgroundColor3 = Color3.fromRGB(120, 120, 120)
 qZjVrX.TextScaled = true
@@ -51,7 +51,7 @@ qZjVrX.TextScaled = true
 -- SizeButton settings
 dKfLmN.Parent = yRmNvA
 dKfLmN.Size = UDim2.new(0.9, 0, 0.2, 0)
-dKfLmN.Position = UDim2.new(0.05, 0, 0.85, 0)
+dKfLmN.Position = UDim2.new(0.05, 0, 0.75, 0)
 dKfLmN.Text = "Resize UI"
 dKfLmN.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
 dKfLmN.TextScaled = true
@@ -61,7 +61,11 @@ local sizeIndex = 1
 local sizeKeys = {"Small", "Medium", "Large"}
 dKfLmN.MouseButton1Click:Connect(function()
     sizeIndex = sizeIndex % #sizeKeys + 1
-    yRmNvA.Size = yRmNvA.SizeOptions[sizeKeys[sizeIndex]]
+    local selectedSize = sizeOptions[sizeKeys[sizeIndex]]
+    yRmNvA.Size = selectedSize.Size
+    gTsKpW.TextSize = selectedSize.TextSize
+    qZjVrX.TextSize = selectedSize.TextSize
+    dKfLmN.TextSize = selectedSize.TextSize
 end)
 
 -- Function to load script
