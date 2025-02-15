@@ -1,20 +1,14 @@
-local script_key = "HRAWEPWBGEEFjuKmiNtdbRFiWLnzOzDX" -- Store key
-local url = "https://api.luarmor.net/files/v3/loaders/e4aedc7ccd2bacd83555baa884f3d4b1.lua"
+-- Spoof HWID
+local spoofedHWID = "1739547781.5328193"  -- Replace with your actual HWID if needed
+writefile("Hoho_Intro.txt", spoofedHWID)
 
-local headers = {
-    ["User-Agent"] = "Mozilla/5.0",
-    ["key"] = script_key
-}
+-- Define your key
+script_key = "HRAWEPWBGEEFjuKmiNtdbRFiWLnzOzDX";
 
-local response = request({
-    Url = url,
-    Method = "GET",
-    Headers = headers
-})
+-- Fetch script
+local script_content = game:HttpGet("https://api.luarmor.net/files/v3/loaders/e4aedc7ccd2bacd83555baa884f3d4b1.lua")
 
-if response and response.StatusCode == 200 then
-    writefile("extracted.txt", response.Body)
-    print("Script saved successfully.")
-else
-    warn("Failed to fetch script. Status:", response and response.StatusCode or "Unknown")
-end
+-- Save script to a file
+writefile("extracted.lua", script_content)
+
+print("Script extracted successfully!")
