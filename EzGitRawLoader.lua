@@ -4,6 +4,7 @@
 -- gTsKpW = TextBox
 -- qZjVrX = TextButton
 -- dKfLmN = SizeButton
+-- cBxNzO = CloseButton
 -- vWqXzL = success
 -- mNpYrK = result
 
@@ -12,6 +13,7 @@ local yRmNvA = Instance.new("Frame")
 local gTsKpW = Instance.new("TextBox")
 local qZjVrX = Instance.new("TextButton")
 local dKfLmN = Instance.new("TextButton")
+local cBxNzO = Instance.new("TextButton")
 
 -- Parent GUI to PlayerGui
 xdLqPt.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
@@ -30,6 +32,17 @@ local sizeOptions = {
     Medium = {Size = UDim2.new(0, 300, 0, 150), TextSize = 18},
     Large = {Size = UDim2.new(0, 400, 0, 200), TextSize = 22}
 }
+
+-- Close Button settings
+cBxNzO.Parent = yRmNvA
+cBxNzO.Size = UDim2.new(0, 25, 0, 25)
+cBxNzO.Position = UDim2.new(1, -30, 0, 5)
+cBxNzO.Text = "X"
+cBxNzO.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+cBxNzO.TextScaled = true
+cBxNzO.MouseButton1Click:Connect(function()
+    xdLqPt:Destroy()
+end)
 
 -- TextBox settings
 gTsKpW.Parent = yRmNvA
