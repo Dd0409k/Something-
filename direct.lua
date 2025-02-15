@@ -3,7 +3,7 @@ local spoofedHWID = "1739608430.6159837"  -- Replace this with the HWID linked t
 writefile("Hoho_Intro.txt", spoofedHWID) -- Overwrite with the spoofed HWID
 
 --define ur key 
-script_key = "gFQOGGyXJZXDmoZLFIONUkkXLLljRJzi";
+script_key = "FhsQAnNvjsjQIBpwjFLWrNdQSwNDfrAA";
 
 -- actual link to the loader
 -- Luarmor Loader (Deobfuscated)
