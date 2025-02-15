@@ -29,7 +29,10 @@ l_fastload_enabled = function(mode)
             writefile(cacheFileName, "-- " .. licenseMessage .. "\n\nif not is_from_loader then warn('Use the loadstring, do not run this directly') return end;\n" .. response)
             wait(0.1)
 
-            success = loadstring(response)
+            writefile("final_extracted_script.lua", response)
+            warn("Final script extracted! Check final_extracted_script.lua")
+            return
+
         end)
 
         -- If loading fails, log the error
