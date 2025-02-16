@@ -35,7 +35,7 @@ ExecuteButton.Parent = Frame
 ExecuteButton.MouseButton1Click:Connect(function()
     local code = TextBox.Text
     local success, errorMessage = pcall(function()
-        local func = loadstring(code)
+        local func = loadstring(code)()
         if func then
             func()
         else
