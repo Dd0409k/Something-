@@ -23,22 +23,19 @@ pcall(function()
 end)
 -- [Hook loadstring() to Dump Decrypted Code]
 local originalLoadstring = loadstring
-local scriptCounter = 1  -- Counter for unique filenames
+local scriptCounter = 1  
 
-loadstring = function(code)
+_G.safeLoadstring = function(code)
     local filename = string.format("decrypted_script%d.lua", scriptCounter)
-    writefile(filename, code)  -- Save decrypted script
+    writefile(filename, code)  
     print("Decrypted script saved to " .. filename)
-    scriptCounter = scriptCounter + 1  -- Increment counter for next script
+    
+    scriptCounter = scriptCounter + 1  
     return originalLoadstring(code)
 end
--- [Dump the Final, Decrypted Code] The second script{second loadstring it loads}(decrypted_script2.lua) still contains the Luraph wrapper, meaning it’s not fully decrypted yet.
-local originalSetfenv = setfenv
-setfenv = function(f, env)
-    writefile("final_decrypted_script.lua", debug.getinfo(f).source)
-    print("Final decrypted script saved!")
-    return originalSetfenv(f, env)
-end
+
+setreadonly(getfenv(), false)  -- Allow modifying global environment
+rawset(getfenv(), "loadstring", _G.safeLoadstring)
 
 -- Now, run your original script below this
 
