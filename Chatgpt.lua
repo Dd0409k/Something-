@@ -1,7 +1,10 @@
+local player = game:GetService("Players").LocalPlayer
 -- [Block the Kick Function] override the Kick function to prevent blacklisting:
-local originalKick = game:GetService("Players").LocalPlayer.Kick
-game:GetService("Players").LocalPlayer.Kick = function(...)
-    warn("Blacklist detected, blocking kick...")
+-- Override Kick function
+if player and player.Kick then
+    player.Kick = function(self, reason)
+        warn("Blocked Kick: " .. tostring(reason))
+    end
 end
 -- [Prevent Error Messages from Showing] Since the script modifies UI to show a blacklist message, override the function that changes text.
 pcall(function()
