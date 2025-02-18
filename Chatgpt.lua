@@ -1,3 +1,15 @@
+-- [Block the Kick Function] override the Kick function to prevent blacklisting:
+local originalKick = game:GetService("Players").LocalPlayer.Kick
+game:GetService("Players").LocalPlayer.Kick = function(...)
+    warn("Blacklist detected, blocking kick...")
+end
+-- [Prevent Error Messages from Showing] Since the script modifies UI to show a blacklist message, override the function that changes text.
+pcall(function()
+    local errorPrompt = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ErrorPrompt
+    errorPrompt.TitleFrame.ErrorTitle.Text = "Bypassed"
+    errorPrompt.MessageArea.ErrorFrame.ErrorMessage.Text = "No blacklist detected."
+end)
+-- [Hook loadstring() to Dump Decrypted Code]
 local originalLoadstring = loadstring
 local scriptCounter = 1  -- Counter for unique filenames
 
@@ -8,7 +20,13 @@ loadstring = function(code)
     scriptCounter = scriptCounter + 1  -- Increment counter for next script
     return originalLoadstring(code)
 end
-
+-- [Dump the Final, Decrypted Code] The second script{second loadstring it loads}(decrypted_script2.lua) still contains the Luraph wrapper, meaning it’s not fully decrypted yet.
+local originalSetfenv = setfenv
+setfenv = function(f, env)
+    writefile("final_decrypted_script.lua", debug.getinfo(f).source)
+    print("Final decrypted script saved!")
+    return originalSetfenv(f, env)
+end
 
 -- Now, run your original script below this
 
