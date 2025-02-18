@@ -1,11 +1,17 @@
-local player = game:GetService("Players").LocalPlayer
 -- [Block the Kick Function] override the Kick function to prevent blacklisting:
 -- Override Kick function
-if player and player.Kick then
-    player.Kick = function(self, reason)
-        warn("Blocked Kick: " .. tostring(reason))
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- Check if Kick exists and override it safely
+if LocalPlayer and typeof(LocalPlayer.Kick) == "function" then
+    local originalKick = LocalPlayer.Kick
+    LocalPlayer.Kick = function(self, reason)
+        warn("[BLOCKED] Kick attempted: " .. tostring(reason))
+        return
     end
 end
+
 -- [Prevent Error Messages from Showing] Since the script modifies UI to show a blacklist message, override the function that changes text.
 pcall(function()
     local errorPrompt = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ErrorPrompt
