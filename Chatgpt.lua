@@ -3,12 +3,12 @@
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
--- Check if Kick exists and override it safely
-if LocalPlayer and typeof(LocalPlayer.Kick) == "function" then
+-- Safely block Kick function
+if LocalPlayer and LocalPlayer.Kick then
     local originalKick = LocalPlayer.Kick
     LocalPlayer.Kick = function(self, reason)
         warn("[BLOCKED] Kick attempted: " .. tostring(reason))
-        return
+        return -- Prevent the kick
     end
 end
 
