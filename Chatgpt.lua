@@ -1,23 +1,15 @@
--- Override loadstring to capture decrypted script
+-- Capture decrypted script
 local originalLoadstring = loadstring
 loadstring = function(code)
-    writefile("decrypted_script.lua", code)  -- Save decrypted script
+    writefile("decrypted_script.lua", code)
     print("Decrypted script saved to decrypted_script.lua")
-    return originalLoadstring(code)  -- Execute normally
-end
-
--- Override pcall to detect hidden errors (optional)
-local originalPcall = pcall
-pcall = function(func, ...)
-    local status, result = originalPcall(func, ...)
-    if not status then print("Error detected:", result) end
-    return status, result
+    loadstring = originalLoadstring  -- Restore original function
+    return originalLoadstring(code)
 end
 
 -- Now, run your original script below this
 
---define ur key 
-script_key = "ViOVCWMAHzgYpBXkvYBLmjDcstobsFqf";
+--define ur key with my other code. keyUI.lua 
 
 -- actual link to the loader
 -- Luarmor Loader (Deobfuscated)
@@ -50,7 +42,8 @@ l_fastload_enabled = function(mode)
             -- Save the downloaded script in a local file
             writefile(cacheFileName, "-- " .. licenseMessage .. "\n\nif not is_from_loader then warn('Use the loadstring, do not run this directly') return end;\n" .. response)
             wait(0.1)
-
+            success = loadstring(response)
+                
             writefile("final_extracted_script.lua", response)
             warn("Final script extracted! Check final_extracted_script.lua")
             return
