@@ -2,28 +2,16 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
+local UIS = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 
 repeat task.wait() until character and character:FindFirstChild("HumanoidRootPart")
 local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-local tool = nil
-local attackCooldown = 0.2  -- Adjust for speed and anti-cheat evasion
-local attackRange = 50       -- Max range to detect enemies
+local attackCooldown = 0.2  -- Adjust speed safely
+local attackRange = 50       -- Max range for detecting enemies
 local lastAttack = tick()
-
--- Function to get the best weapon/tool
-local function getTool()
-    if character then
-        for _, v in ipairs(character:GetChildren()) do
-            if v:IsA("Tool") then
-                return v
-            end
-        end
-    end
-    return nil
-end
 
 -- Function to find the nearest mob
 local function getNearestMob()
@@ -42,16 +30,14 @@ end
 
 -- Function to attack the target
 local function attackMob(mob)
-    tool = getTool()
-    if tool and tick() - lastAttack >= attackCooldown then
-        humanoidRootPart.CFrame = mob.HumanoidRootPart.CFrame * CFrame.new(0, 0, -2) -- Positions behind enemy
-        if tool:FindFirstChild("RemoteFunction") then
-            tool.RemoteFunction:InvokeServer("Attack") -- Alternative method for some weapons
-        else
-            VirtualInputManager:SendKeyEvent(true, "E", false, game) -- Simulate attack key
-            task.wait(0.1)
-            VirtualInputManager:SendKeyEvent(false, "E", false, game)
-        end
+    if tick() - lastAttack >= attackCooldown then
+        humanoidRootPart.CFrame = mob.HumanoidRootPart.CFrame * CFrame.new(0, 0, -2) -- Position safely
+
+        -- Simulate M1 (left mouse button) click
+        VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 1) -- Press left click
+        task.wait(0.1)
+        VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 1) -- Release left click
+
         lastAttack = tick()
     end
 end
