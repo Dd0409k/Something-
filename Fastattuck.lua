@@ -28,16 +28,21 @@ local function getNearestMob()
     return nearest
 end
 
+-- Function to simulate a tap (M1 for mobile)
+local function simulateTap()
+    local viewportSize = workspace.CurrentCamera.ViewportSize
+    local tapPosition = Vector2.new(viewportSize.X / 2, viewportSize.Y / 2) -- Center of the screen
+
+    VirtualInputManager:SendTouchEvent(tapPosition.X, tapPosition.Y, 0, true, game, 1) -- Press
+    task.wait(0.1)
+    VirtualInputManager:SendTouchEvent(tapPosition.X, tapPosition.Y, 0, false, game, 1) -- Release
+end
+
 -- Function to attack the target
 local function attackMob(mob)
     if tick() - lastAttack >= attackCooldown then
         humanoidRootPart.CFrame = mob.HumanoidRootPart.CFrame * CFrame.new(0, 0, -2) -- Position safely
-
-        -- Simulate M1 (left mouse button) click
-        VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 1) -- Press left click
-        task.wait(0.1)
-        VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 1) -- Release left click
-
+        simulateTap() -- Simulate mobile attack
         lastAttack = tick()
     end
 end
