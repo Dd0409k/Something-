@@ -1,16 +1,19 @@
 -- [Block the Kick Function] override the Kick function to prevent blacklisting:
--- Override Kick function
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
+-- Override Kick function globally.
+local mt = getrawmetatable(game)
+setreadonly(mt, false)
 
--- Safely block Kick function
-if LocalPlayer and LocalPlayer.Kick then
-    local originalKick = LocalPlayer.Kick
-    LocalPlayer.Kick = function(self, reason)
-        warn("[BLOCKED] Kick attempted: " .. tostring(reason))
+local oldIndex = mt.__namecall
+mt.__namecall = newcclosure(function(self, ...)
+    local method = getnamecallmethod()
+    if method == "Kick" then
+        warn("[BLOCKED] Kick detected: " .. tostring(...))
         return -- Prevent the kick
     end
-end
+    return oldIndex(self, ...)
+end)
+
+setreadonly(mt, true) -- Lock metatable again
 
 -- [Prevent Error Messages from Showing] Since the script modifies UI to show a blacklist message, override the function that changes text.
 pcall(function()
