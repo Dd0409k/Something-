@@ -1,11 +1,14 @@
--- Capture decrypted script
 local originalLoadstring = loadstring
+local scriptCounter = 1  -- Counter for unique filenames
+
 loadstring = function(code)
-    writefile("decrypted_script.lua", code)
-    print("Decrypted script saved to decrypted_script.lua")
-    loadstring = originalLoadstring  -- Restore original function
+    local filename = string.format("decrypted_script%d.lua", scriptCounter)
+    writefile(filename, code)  -- Save decrypted script
+    print("Decrypted script saved to " .. filename)
+    scriptCounter = scriptCounter + 1  -- Increment counter for next script
     return originalLoadstring(code)
 end
+
 
 -- Now, run your original script below this
 
