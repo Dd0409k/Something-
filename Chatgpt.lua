@@ -10,7 +10,7 @@ end
 -- Now, run your original script below this
 
 --define ur key with my other code. keyUI.lua 
-
+script_key = "eXHLLNuTEjXMVCHtqqQYSgDOlMIAUvmi"
 -- actual link to the loader
 -- Luarmor Loader (Deobfuscated)
 
