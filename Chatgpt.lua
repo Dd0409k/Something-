@@ -1,3 +1,12 @@
+-- attempt to Use Debug Hooks to Extract True Code
+debug.sethook(function()
+    for i = 1, math.huge do
+        local info = debug.getinfo(i, "S")
+        if not info then break end
+        print(info.source)
+    end
+end, "c")
+
 -- [Block the Kick Function] override the Kick function to prevent blacklisting:
 -- Override Kick function globally.
 local mt = getrawmetatable(game)
