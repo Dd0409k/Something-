@@ -49,7 +49,7 @@ rawset(getfenv(), "loadstring", _G.safeLoadstring)
 -- Now, run your original script below this
 
 --define ur key with my other code. keyUI.lua 
-script_key = "HoeBotndqMKOyCvVHFjykwstzuWIOjAf"
+-- https://raw.githubusercontent.com/Dd0409k/Something-/refs/heads/main/keyUI.lua
 -- actual link to the loader
 -- Luarmor Loader (Deobfuscated)
 
