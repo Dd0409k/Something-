@@ -1,20 +1,20 @@
--- Attempt to Use Debug Hooks to Extract True Code
-for i = 1, 1000 do  -- Limit loop to prevent infinite errors
-    local success, info = pcall(debug.getinfo, i, "S")
+-- Attempt to Extract Executed Code with Better Debug Info
+for i = 1, 1000 do  -- Limit loop
+    local success, info = pcall(debug.getinfo, i, "fls")
     if not success or not info then break end
-    print(info.source)
-    writefile("true_executed.lua", info.source)
+    print(info.source, info.func)
+    writefile("true_executed.lua", info.source .. " | Function: " .. tostring(info.func))
 end
 
--- Dumping upvalues
+-- Advanced Upvalue Extraction
 local function dump_upvalues(fn)
     if type(fn) ~= "function" then return end
-    for i = 1, 100 do  -- Prevent infinite loops
+    for i = 1, 50 do  -- Limit to prevent infinite loops
         local success, name, value = pcall(debug.getupvalue, fn, i)
         if not success or not name then break end
         local pront = "Upvalue: " .. tostring(name) .. " = " .. tostring(value)
         print(pront)
-        writefile("upvalues.lua", pront)
+        appendfile("upvalues.lua", pront .. "\n")  -- Append to avoid overwriting
     end
 end
 
@@ -23,6 +23,33 @@ for _, v in pairs(debug.getregistry()) do
         dump_upvalues(v)
     end
 end
+
+-- Intercept loadstring() to Save Decrypted Code
+local originalLoadstring = loadstring
+local scriptCounter = 1  
+
+_G.safeLoadstring = function(code)
+    local filename = string.format("decrypted_script%d.lua", scriptCounter)
+    writefile(filename, code)  
+    print("Decrypted script saved to " .. filename)
+    
+    scriptCounter = scriptCounter + 1  
+    return originalLoadstring(code)
+end
+
+setreadonly(getfenv(), false)  
+rawset(getfenv(), "loadstring", _G.safeLoadstring)
+
+-- Extract Function Sources from getregistry()
+for _, v in pairs(debug.getregistry()) do
+    if type(v) == "function" then
+        local success, info = pcall(debug.getinfo, v, "S")
+        if success and info and info.source then
+            appendfile("final_extracted_script.lua", info.source .. "\n")
+        end
+    end
+end
+
 
 -- Block the Kick Function to Prevent Blacklisting
 local mt = getrawmetatable(game)
@@ -54,23 +81,6 @@ pcall(function()
         end
     end
 end)
-
--- Hook loadstring() to Dump Decrypted Code
-local originalLoadstring = loadstring
-local scriptCounter = 1  
-
-_G.safeLoadstring = function(code)
-    local filename = string.format("decrypted_script%d.lua", scriptCounter)
-    writefile(filename, code)  
-    print("Decrypted script saved to " .. filename)
-    
-    scriptCounter = scriptCounter + 1  
-    return originalLoadstring(code)
-end
-
-setreadonly(getfenv(), false)  -- Allow modifying global environment
-rawset(getfenv(), "loadstring", _G.safeLoadstring)
-
 
 -- Now, run your original script below this
 
