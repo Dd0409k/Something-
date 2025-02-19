@@ -7,12 +7,39 @@ local function extract_upvalues(fn)
         local success, name, value = pcall(debug.getupvalue, fn, i)
         if not success or not name then break end
 
-        if value ~= nil and type(value) ~= "table" then  -- Ignore nil and generic tables
+        if value ~= nil then  -- Keep everything, including tables
             table.insert(upvalues, {name = name, value = value})
         end
     end
     return upvalues
 end
+
+local function deep_inspect(value, depth)
+    depth = depth or 0
+    if depth > 3 then return "..." end  -- Prevents deep recursion
+
+    if type(value) == "table" then
+        local result = "{\n"
+        for k, v in pairs(value) do
+            result = result .. string.rep("  ", depth + 1) .. tostring(k) .. " = " .. deep_inspect(v, depth + 1) .. ",\n"
+        end
+        return result .. string.rep("  ", depth) .. "}"
+    else
+        return tostring(value)
+    end
+end
+
+local extracted_data = {}
+for _, v in pairs(debug.getregistry()) do
+    local upvalues = extract_upvalues(v)
+    for _, uv in ipairs(upvalues) do
+        table.insert(extracted_data, uv.name .. " = " .. deep_inspect(uv.value))
+    end
+end
+
+writefile("full_upvalues_dump.lua", table.concat(extracted_data, "\n"))
+print("Upvalues dump saved to full_upvalues_dump.lua")
+
 
 
 -- Scan registry for functions with useful upvalues
@@ -130,8 +157,7 @@ l_fastload_enabled = function(mode)
             wait(0.1)
             success = loadstring(response)
                 
-            writefile("final_extracted_script.lua", response)
-            warn("Final script extracted! Check final_extracted_script.lua")
+            warn("Final script executed! wait for some time")
             return
 
         end)
