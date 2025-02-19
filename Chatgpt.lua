@@ -1,3 +1,14 @@
+-- Ensure files exist before reading
+local function ensureFileExists(filename)
+    if not pcall(readfile, filename) then
+        writefile(filename, "")  -- Create empty file
+    end
+end
+
+ensureFileExists("true_executed.lua")
+ensureFileExists("upvalues.lua")
+ensureFileExists("final_extracted_script.lua")
+
 -- Extract Executed Code with Debug Info
 for i = 1, 1000 do  -- Limit loop
     local success, info = pcall(debug.getinfo, i, "fls")
@@ -9,7 +20,8 @@ end
 -- Upvalue Extraction (Fixed File Writing)
 local function dump_upvalues(fn)
     if type(fn) ~= "function" then return end
-    local upvalues_data = readfile("upvalues.lua") or ""
+    ensureFileExists("upvalues.lua")
+    local upvalues_data = readfile("upvalues.lua")
     for i = 1, 50 do  -- Limit to prevent infinite loops
         local success, name, value = pcall(debug.getupvalue, fn, i)
         if not success or not name then break end
@@ -43,7 +55,8 @@ setreadonly(getfenv(), false)
 rawset(getfenv(), "loadstring", _G.safeLoadstring)
 
 -- Extract Function Sources from debug.getregistry()
-local extracted_data = readfile("final_extracted_script.lua") or ""
+ensureFileExists("final_extracted_script.lua")
+local extracted_data = readfile("final_extracted_script.lua")
 for _, v in pairs(debug.getregistry()) do
     if type(v) == "function" then
         local success, info = pcall(debug.getinfo, v, "S")
@@ -53,7 +66,6 @@ for _, v in pairs(debug.getregistry()) do
     end
 end
 writefile("final_extracted_script.lua", extracted_data)  -- Append properly
-
 
 -- Block the Kick Function to Prevent Blacklisting
 local mt = getrawmetatable(game)
