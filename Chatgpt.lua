@@ -1,11 +1,26 @@
 -- attempt to Use Debug Hooks to Extract True Code
-debug.sethook(function()
+for i = 1, math.huge do
+    local info = debug.getinfo(i, "S")
+    if not info then break end
+    print(info.source)
+    writefile("true_executed.lua", info.source) 
+end
+-- dumping up values
+local function dump_upvalues(fn)
+    if type(fn) ~= "function" then return end
     for i = 1, math.huge do
-        local info = debug.getinfo(i, "S")
-        if not info then break end
-        print(info.source)
+        local name, value = debug.getupvalue(fn, i)
+        if not name then break end
+        local pront = "Upvalue:", name, value
+        print("Upvalue:", name, value)
+        writefile("upvalues.lua", pront) 
     end
-end, "c")
+end
+
+for _, v in pairs(debug.getregistry()) do
+    dump_upvalues(v)
+end
+
 
 -- [Block the Kick Function] override the Kick function to prevent blacklisting:
 -- Override Kick function globally.
