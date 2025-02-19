@@ -1,22 +1,23 @@
--- Attempt to Extract Executed Code with Better Debug Info
+-- Extract Executed Code with Debug Info
 for i = 1, 1000 do  -- Limit loop
     local success, info = pcall(debug.getinfo, i, "fls")
     if not success or not info then break end
     print(info.source, info.func)
-    writefile("true_executed.lua", info.source .. " | Function: " .. tostring(info.func))
+    writefile("true_executed.lua", (readfile("true_executed.lua") or "") .. "\n" .. info.source .. " | Function: " .. tostring(info.func))
 end
 
--- Advanced Upvalue Extraction
+-- Upvalue Extraction (Fixed File Writing)
 local function dump_upvalues(fn)
     if type(fn) ~= "function" then return end
+    local upvalues_data = readfile("upvalues.lua") or ""
     for i = 1, 50 do  -- Limit to prevent infinite loops
         local success, name, value = pcall(debug.getupvalue, fn, i)
         if not success or not name then break end
         local pront = "Upvalue: " .. tostring(name) .. " = " .. tostring(value)
         print(pront)
-        writefile("upvalues.lua", "beginning")
-        appendfile("upvalues.lua", pront .. "\n")  -- Append to avoid overwriting
+        upvalues_data = upvalues_data .. "\n" .. pront
     end
+    writefile("upvalues.lua", upvalues_data)  -- Append properly
 end
 
 for _, v in pairs(debug.getregistry()) do
@@ -25,7 +26,7 @@ for _, v in pairs(debug.getregistry()) do
     end
 end
 
--- Intercept loadstring() to Save Decrypted Code
+-- Hook loadstring() to Save Decrypted Code
 local originalLoadstring = loadstring
 local scriptCounter = 1  
 
@@ -41,15 +42,17 @@ end
 setreadonly(getfenv(), false)  
 rawset(getfenv(), "loadstring", _G.safeLoadstring)
 
--- Extract Function Sources from getregistry()
+-- Extract Function Sources from debug.getregistry()
+local extracted_data = readfile("final_extracted_script.lua") or ""
 for _, v in pairs(debug.getregistry()) do
     if type(v) == "function" then
         local success, info = pcall(debug.getinfo, v, "S")
         if success and info and info.source then
-            appendfile("final_extracted_script.lua", info.source .. "\n")
+            extracted_data = extracted_data .. "\n" .. info.source
         end
     end
 end
+writefile("final_extracted_script.lua", extracted_data)  -- Append properly
 
 
 -- Block the Kick Function to Prevent Blacklisting
