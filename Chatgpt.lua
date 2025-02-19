@@ -14,6 +14,7 @@ local function dump_upvalues(fn)
         if not success or not name then break end
         local pront = "Upvalue: " .. tostring(name) .. " = " .. tostring(value)
         print(pront)
+        writefile("upvalues.lua", "beginning")
         appendfile("upvalues.lua", pront .. "\n")  -- Append to avoid overwriting
     end
 end
