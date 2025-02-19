@@ -1,10 +1,10 @@
 -- attempt to Use Debug Hooks to Extract True Code
-for i = 1, math.huge do
-    local info = debug.getinfo(i, "S")
-    if not info then break end
-    print(info.source)
-    writefile("true_executed.lua", info.source) 
-end
+--for i = 1, math.huge do
+--    local info = debug.getinfo(i, "S")
+--    if not info then break end
+--    print(info.source)
+--    writefile("true_executed.lua", info.source) 
+--end
 -- dumping up values
 local function dump_upvalues(fn)
     if type(fn) ~= "function" then return end
