@@ -1,71 +1,63 @@
--- Ensure files exist before reading
-local function ensureFileExists(filename)
-    if not pcall(readfile, filename) then
-        writefile(filename, "")  -- Create empty file
+-- Function to extract upvalues properly
+local function extract_upvalues(fn)
+    if type(fn) ~= "function" then return {} end
+    local upvalues = {}
+    for i = 1, math.huge do
+        local name, value = debug.getupvalue(fn, i)
+        if not name then break end
+        if value ~= nil and type(value) ~= "table" then  -- Ignore nil and generic tables
+            table.insert(upvalues, {name = name, value = value})
+        end
     end
+    return upvalues
 end
 
-ensureFileExists("true_executed.lua")
-ensureFileExists("upvalues.lua")
-ensureFileExists("final_extracted_script.lua")
-
--- Extract Executed Code with Debug Info
-for i = 1, 1000 do  -- Limit loop
-    local success, info = pcall(debug.getinfo, i, "fls")
-    if not success or not info then break end
-    print(info.source, info.func)
-    writefile("true_executed.lua", (readfile("true_executed.lua") or "") .. "\n" .. info.source .. " | Function: " .. tostring(info.func))
-end
-
--- Upvalue Extraction (Fixed File Writing)
-local function dump_upvalues(fn)
-    if type(fn) ~= "function" then return end
-    ensureFileExists("upvalues.lua")
-    local upvalues_data = readfile("upvalues.lua")
-    for i = 1, 50 do  -- Limit to prevent infinite loops
-        local success, name, value = pcall(debug.getupvalue, fn, i)
-        if not success or not name then break end
-        local pront = "Upvalue: " .. tostring(name) .. " = " .. tostring(value)
-        print(pront)
-        upvalues_data = upvalues_data .. "\n" .. pront
-    end
-    writefile("upvalues.lua", upvalues_data)  -- Append properly
-end
-
+-- Scan registry for functions with useful upvalues
+local extracted_data = {}
 for _, v in pairs(debug.getregistry()) do
     if type(v) == "function" then
-        dump_upvalues(v)
-    end
-end
-
--- Hook loadstring() to Save Decrypted Code
-local originalLoadstring = loadstring
-local scriptCounter = 1  
-
-_G.safeLoadstring = function(code)
-    local filename = string.format("decrypted_script%d.lua", scriptCounter)
-    writefile(filename, code)  
-    print("Decrypted script saved to " .. filename)
-    
-    scriptCounter = scriptCounter + 1  
-    return originalLoadstring(code)
-end
-
-setreadonly(getfenv(), false)  
-rawset(getfenv(), "loadstring", _G.safeLoadstring)
-
--- Extract Function Sources from debug.getregistry()
-ensureFileExists("final_extracted_script.lua")
-local extracted_data = readfile("final_extracted_script.lua")
-for _, v in pairs(debug.getregistry()) do
-    if type(v) == "function" then
-        local success, info = pcall(debug.getinfo, v, "S")
-        if success and info and info.source then
-            extracted_data = extracted_data .. "\n" .. info.source
+        local upvalues = extract_upvalues(v)
+        if #upvalues > 0 then
+            extracted_data[v] = upvalues
         end
     end
 end
-writefile("final_extracted_script.lua", extracted_data)  -- Append properly
+
+-- Save filtered upvalues
+local output = ""
+for fn, upvalues in pairs(extracted_data) do
+    output = output .. tostring(fn) .. ":\n"
+    for _, data in ipairs(upvalues) do
+        output = output .. "  " .. data.name .. " = " .. tostring(data.value) .. "\n"
+    end
+end
+writefile("filtered_upvalues.lua", output)
+print("Filtered upvalues saved.")
+
+-- Identify game-related tables
+local function scan_table(tbl, depth)
+    if depth > 3 then return end  -- Prevent deep recursion
+    for k, v in pairs(tbl) do
+        if type(v) == "table" then
+            scan_table(v, depth + 1)
+        elseif type(v) == "function" then
+            local upvalues = extract_upvalues(v)
+            if #upvalues > 0 then
+                print("Found function with upvalues in table:", k, upvalues)
+            end
+        elseif type(v) == "string" and v:match("game") then
+            print("Possible game-related entry:", k, v)
+        end
+    end
+end
+
+-- Run table scanner on key registry entries
+for _, v in pairs(debug.getregistry()) do
+    if type(v) == "table" then
+        scan_table(v, 0)
+    end
+end
+
 
 -- Block the Kick Function to Prevent Blacklisting
 local mt = getrawmetatable(game)
