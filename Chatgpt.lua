@@ -2,15 +2,18 @@
 local function extract_upvalues(fn)
     if type(fn) ~= "function" then return {} end
     local upvalues = {}
+
     for i = 1, math.huge do
-        local name, value = debug.getupvalue(fn, i)
-        if not name then break end
+        local success, name, value = pcall(debug.getupvalue, fn, i)
+        if not success or not name then break end
+
         if value ~= nil and type(value) ~= "table" then  -- Ignore nil and generic tables
             table.insert(upvalues, {name = name, value = value})
         end
     end
     return upvalues
 end
+
 
 -- Scan registry for functions with useful upvalues
 local extracted_data = {}
