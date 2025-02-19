@@ -1,29 +1,30 @@
--- attempt to Use Debug Hooks to Extract True Code
---for i = 1, math.huge do
---    local info = debug.getinfo(i, "S")
---    if not info then break end
---    print(info.source)
---    writefile("true_executed.lua", info.source) 
---end
--- dumping up values
+-- Attempt to Use Debug Hooks to Extract True Code
+for i = 1, 1000 do  -- Limit loop to prevent infinite errors
+    local success, info = pcall(debug.getinfo, i, "S")
+    if not success or not info then break end
+    print(info.source)
+    writefile("true_executed.lua", info.source)
+end
+
+-- Dumping upvalues
 local function dump_upvalues(fn)
     if type(fn) ~= "function" then return end
-    for i = 1, math.huge do
-        local name, value = debug.getupvalue(fn, i)
-        if not name then break end
-        local pront = "Upvalue:", name, value
-        print("Upvalue:", name, value)
-        writefile("upvalues.lua", pront) 
+    for i = 1, 100 do  -- Prevent infinite loops
+        local success, name, value = pcall(debug.getupvalue, fn, i)
+        if not success or not name then break end
+        local pront = "Upvalue: " .. tostring(name) .. " = " .. tostring(value)
+        print(pront)
+        writefile("upvalues.lua", pront)
     end
 end
 
 for _, v in pairs(debug.getregistry()) do
-    dump_upvalues(v)
+    if type(v) == "function" then
+        dump_upvalues(v)
+    end
 end
 
-
--- [Block the Kick Function] override the Kick function to prevent blacklisting:
--- Override Kick function globally.
+-- Block the Kick Function to Prevent Blacklisting
 local mt = getrawmetatable(game)
 setreadonly(mt, false)
 
@@ -37,15 +38,24 @@ mt.__namecall = newcclosure(function(self, ...)
     return oldIndex(self, ...)
 end)
 
-setreadonly(mt, true) -- Lock metatable again
+setreadonly(mt, true)
 
--- [Prevent Error Messages from Showing] Since the script modifies UI to show a blacklist message, override the function that changes text.
+-- Prevent Error Messages from Showing
 pcall(function()
-    local errorPrompt = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ErrorPrompt
-    errorPrompt.TitleFrame.ErrorTitle.Text = "Bypassed"
-    errorPrompt.MessageArea.ErrorFrame.ErrorMessage.Text = "No blacklist detected."
+    local errorPrompt = game:GetService("CoreGui"):FindFirstChild("RobloxPromptGui")
+    if errorPrompt then
+        local overlay = errorPrompt:FindFirstChild("promptOverlay")
+        if overlay then
+            local errorFrame = overlay:FindFirstChild("ErrorPrompt")
+            if errorFrame then
+                errorFrame.TitleFrame.ErrorTitle.Text = "Bypassed"
+                errorFrame.MessageArea.ErrorFrame.ErrorMessage.Text = "No blacklist detected."
+            end
+        end
+    end
 end)
--- [Hook loadstring() to Dump Decrypted Code]
+
+-- Hook loadstring() to Dump Decrypted Code
 local originalLoadstring = loadstring
 local scriptCounter = 1  
 
@@ -60,6 +70,7 @@ end
 
 setreadonly(getfenv(), false)  -- Allow modifying global environment
 rawset(getfenv(), "loadstring", _G.safeLoadstring)
+
 
 -- Now, run your original script below this
 
