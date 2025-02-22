@@ -1,14 +1,15 @@
--- Spoof HWID
-local spoofedHWID = "1739608430.6159837"  -- Replace with your actual HWID if needed
-writefile("Hoho_Intro.txt", spoofedHWID)
+-- Hook loadstring() to Save Decrypted Code
+local originalLoadstring = loadstring
+local scriptCounter = 1  
 
--- Define your key
-script_key = "FhsQAnNvjsjQIBpwjFLWrNdQSwNDfrAA";
+_G.safeLoadstring = function(code)
+    local filename = string.format("script%d.lua", scriptCounter)
+    writefile(filename, code)  
+    print("script saved to " .. filename)
+    
+    scriptCounter = scriptCounter + 1  
+    return originalLoadstring(code)
+end
 
--- Fetch script
-local script_content = game:HttpGet("https://api.luarmor.net/files/v3/loaders/e4aedc7ccd2bacd83555baa884f3d4b1.lua")
-
--- Save script to a file
-writefile("final_extracted_script.lua", script_content)
-
-print("Script extracted successfully!")
+setreadonly(getfenv(), false)  
+rawset(getfenv(), "loadstring", _G.safeLoadstring)
