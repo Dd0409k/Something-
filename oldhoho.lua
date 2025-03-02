@@ -74,7 +74,7 @@ local list = {
 	[1451439645] = "loadstring(game:HttpGet('https://raw.githubusercontent.com/acsu123/HohoV2/Free/KingLegacyFree.lua'))()",
 
 	--Blox Fruit
-	[994732206] = "loadstring(game:HttpGet('https://raw.githubusercontent.com/acsu123/HohoV2/main/BloxFruit/BloxFruitTEST_ONLY.lua'))()",
+	[994732206] = "loadstring(game:HttpGet('https://raw.githubusercontent.com/acsu123/HohoV2/0bf38eb29585e4b07eaa726964b1d7e0b1720816/BloxFruit/BloxFruitTEST_ONLY.lua'))()",
 
 	--Pet Simulator X
 	[2316994223] = "loadstring(game:HttpGet('https://raw.githubusercontent.com/acsu123/HohoV2/Free/PetSimXFree.lua'))()",
