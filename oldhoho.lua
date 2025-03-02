@@ -149,4 +149,4 @@ else
 	notify.New("Please join discord.gg/hohohub to check what game r supported by us!", 60)
 end
 
-local path = "wait(5);loadstring(game:HttpGet('https://raw.githubusercontent.com/acsu123/HohoV2/main/ScriptLoad.lua'))()"
+local path = "wait(5);loadstring(game:HttpGet('https://raw.githubusercontent.com/Dd0409k/Something-/refs/heads/main/oldhoho.lua'))()"
